@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="128" height="120" viewBox="0 0 128 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<rect y="90" width="128" height="30" rx="15" fill="#F0CE8C"/>
+	<rect width="128" height="30" rx="15" fill="#F0CE8C"/>
+	<rect y="70" width="128" height="20" rx="10" fill="#957146"/>
+	<rect y="50" width="128" height="20" rx="10" fill="#C43D3D"/>
+	<rect y="30" width="128" height="20" rx="10" fill="#499A0A"/>
+</svg>

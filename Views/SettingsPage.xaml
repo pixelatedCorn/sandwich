@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="Sandwich.Views.SettingsPage"
+             Title="SettingsPage"
+             NavigationPage.HasBackButton="False"
+             NavigationPage.HasNavigationBar="False">
+    
+    <VerticalStackLayout BackgroundColor="#666">
+        <Grid HorizontalOptions="Fill" HeightRequest="32" Background="#4a12aa">
+            <Button Text="&lt;" Command="{Binding BackCommand}" TextColor="#d9d9d9" BackgroundColor="Transparent" HeightRequest="32" WidthRequest="64" HorizontalOptions="Start" BorderColor="Transparent"/>
+        </Grid>
+        <VerticalStackLayout Margin="32" Padding="8" Background="#777" VerticalOptions="Fill">
+            <HorizontalStackLayout>
+                <Label Text="Title"/>
+                <Entry Text="{Binding Title}" TextColor="#d9d9d9"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label Text="Game Version"/>
+                <Picker ItemsSource="{Binding Versions}" SelectedIndex="{Binding PickerIndex}" x:Name="GameVersionPicker" TextColor="#d9d9d9"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label Text="Memory (GB)"/>
+                <Entry Text="{Binding Memory}" TextColor="#d9d9d9"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <Label Text="JVM Args"/>
+                <Entry Text="{Binding JVMArgs}" TextColor="#d9d9d9"/>
+            </HorizontalStackLayout>
+            <Label Text="To set a pack image, add a file called 'thumbnail.png' to the pack folder."/>
+            <Button BorderColor="Transparent" TextColor="#d9d9d9" BackgroundColor="#4a12aa" HeightRequest="40" Text="Open Pack Folder" Command="{Binding OpenFolderCommand}"/>
+            <Button BorderColor="Transparent" TextColor="#d9d9d9" BackgroundColor="#aa1122" HeightRequest="40" Text="Delete Pack" Command="{Binding DeletePackCommand}"/>
+        </VerticalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,36 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sandwich.Views.MainPage"
+             NavigationPage.HasNavigationBar="False"
+             MinimumWidthRequest="1280"
+             MinimumHeightRequest="720"
+             Title="MainPage">
+
+    <Grid BackgroundColor="#666">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="256"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <CollectionView Grid.ColumnSpan="2" BackgroundColor="#777" Margin="64, 32, 32, 32" x:Name="PacksDisplay" ItemsLayout="VerticalGrid, 4" ItemsSource="{Binding Packs}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Margin="32" Padding="8" WidthRequest="256" HeightRequest="256" BackgroundColor="#666">
+                        <Label HorizontalOptions="Center" Text="{Binding Title}"/>
+                        <Image HorizontalOptions="Center" Source="{Binding PackImage}" HeightRequest="160" WidthRequest="160"/>
+                        <HorizontalStackLayout HorizontalOptions="Center">
+                            <Button BackgroundColor="#4a12aa" Text="Launch" Grid.Column="1" Command="{Binding Source={x:Reference PacksDisplay}, Path=BindingContext.LaunchCommand}" CommandParameter="{Binding}" TextColor="#d9d9d9"/>
+                            <ImageButton Margin="16, 0, 0, 0" BackgroundColor="#666" Grid.Column="2" HeightRequest="32" WidthRequest="32" Source="settings.png" Command="{Binding Source={x:Reference PacksDisplay}, Path=BindingContext.SettingsCommand}" CommandParameter="{Binding}"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <VerticalStackLayout FlowDirection="LeftToRight" BackgroundColor="#4a12aa" TranslationX="-224" WidthRequest="256" x:Name="Sidebar">
+            <Button Text=">" Padding="224,0,0,0" WidthRequest="256" TextColor="White"
+                    BackgroundColor="Transparent" BorderColor="Transparent" FontSize="Large"
+                    HorizontalOptions="End" x:Name="SidebarButton" Command="{Binding SidebarCommand}"/>
+
+        </VerticalStackLayout>
+        <Button Grid.Column="1" Margin="32" TextColor="#d9d9d9" BackgroundColor="#4a12aa" HeightRequest="48" WidthRequest="48" Text="+" Command="{Binding NewPackCommand}" VerticalOptions="End" HorizontalOptions="End"/>
+    </Grid>
+</ContentPage>
