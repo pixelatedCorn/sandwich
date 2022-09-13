@@ -16,26 +16,28 @@ namespace Sandwich.ViewModels
 {
     internal class SettingsPageViewModel : INotifyPropertyChanged
     {
-        SettingsPage parent;
-        Pack pack { get; set; }
-        Manifest manifest { get => pack.Manifest; set => pack.Manifest = value; }
-        public string Title { get => manifest.Title; set => manifest.Title = value; }
-        private string memory;
+        SettingsPage Parent;
+        MainPageViewModel MainPageVM;
+        Pack Pack { get; set; }
+        Manifest Manifest { get => Pack.Manifest; set => Pack.Manifest = value; }
+        public string Title { get => Manifest.Title; set => Manifest.Title = value; }
+        private string memory = "2";
         public string Memory { get => memory; set => memory = value; }
-        public string JVMArgs { get => manifest.JVMArgs; set => manifest.JVMArgs = value; }
+        public string JVMArgs { get => Manifest.JVMArgs; set => Manifest.JVMArgs = value; }
         private int pickerIndex = -1;
         public int PickerIndex { get => pickerIndex; set => pickerIndex = value; }
         public ObservableCollection<string> Versions { get; private set; }
 
-        public SettingsPageViewModel(SettingsPage page, Pack p)
+        public SettingsPageViewModel(SettingsPage page, Pack p, MainPageViewModel mainPageVM)
         {
-            parent = page;
-            pack = p;
-            memory = manifest.Memory.ToString();
+            Parent = page;
+            Pack = p;
+            Memory = Manifest.Memory.ToString();
             Versions = new ObservableCollection<string>(FileManager.GetVersions());
-            OnPropertyChanged(nameof(pack));
+            OnPropertyChanged(nameof(Pack));
             OnPropertyChanged(nameof(Versions));
-            if (Versions.Contains(manifest.GameVersion)) PickerIndex = Versions.IndexOf(manifest.GameVersion);
+            if (Versions.Contains(Manifest.GameVersion)) PickerIndex = Versions.IndexOf(Manifest.GameVersion);
+            MainPageVM = mainPageVM;
         }
 
         public ICommand BackCommand => new Command(SaveAndReturn);
@@ -44,50 +46,68 @@ namespace Sandwich.ViewModels
 
         private void SaveAndReturn()
         {
+            Save();
+            _ = MainPage.instance.NavigateBack();
+        }
+
+        private void Save()
+        {
             int mem = 2;
-            if (!Int32.TryParse(memory, out mem))
+            if (!Int32.TryParse(Memory, out mem) || mem < 2)
             {
-                parent.ShowAlert("Error", "Invalid memory size...", "OK");
+
+                _ = Parent.ShowAlert("Error", "Invalid memory size...", "OK");
                 return;
             }
             if (PickerIndex < 0)
             {
-                parent.ShowAlert("Error", "Please select a game version...", "OK");
+                _ = Parent.ShowAlert("Error", "Please select a game version...", "OK");
                 return;
             }
-            manifest.GameVersion = Versions[PickerIndex];
-            manifest.Memory = mem;
-            MainPageViewModel.UpdateCurrentPack(pack);
-            FileManager.SaveManifest(pack);
-            MainPage.instance.NavigateBack();
+            if (Title == "")
+            {
+                _ = Parent.ShowAlert("Error", "Please enter a pack title...", "OK");
+                return;
+            }
+            if (FileManager.GetPackNames().Contains(Title.ToLower()))
+            {
+                _ = Parent.ShowAlert("Error", "Pack name unavailable...", "OK");
+                return;
+            }
+            Manifest.GameVersion = Versions[PickerIndex];
+            Manifest.Memory = mem;
+            MainPageVM.UpdateCurrentPack(Pack);
+            FileManager.SaveManifest(Pack);
         }
 
         private void OpenPackFolder()
         {
-            if (pack.Title == "")
+            if (Pack.Title == "")
             {
-                parent.ShowAlert("Error", "Please set a pack title...", "OK");
+                _ = Parent.ShowAlert("Error", "Please set a pack title...", "OK");
                 return;
             }
-            if (pack.Path == "")
+            if (Pack.Path == "")
             {
-                pack.Path = $"{Environment.CurrentDirectory}\\data\\{pack.Title}";
-                FileManager.InitializePackFolder(pack);
+                Pack.Path = $"{Environment.CurrentDirectory}\\data\\{Pack.Title}";
+                FileManager.InitializePackFolder(Pack);
             }
-            Process.Start("explorer.exe", pack.Path);
+            Save();
+            Process.Start("explorer.exe", Pack.Path);
         }
 
         private void DeletePack()
         {
-            parent.ConfirmDelete();
+            _ = Parent.ConfirmDelete();
         }
 
         public void ActuallyDeletePack()
         {
-            FileManager.RemovePack(pack);
-            MainPageViewModel.RemoveCurrentPack();
-            MainPage.instance.NavigateBack();
+            FileManager.RemovePack(Pack);
+            MainPageVM.RemoveCurrentPack();
+            _ = MainPage.instance.NavigateBack();
         }
+#pragma warning restore CS4014
 
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged([CallerMemberName] string propertyName = null)

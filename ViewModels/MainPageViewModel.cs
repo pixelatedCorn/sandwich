@@ -12,25 +12,13 @@ namespace Sandwich.ViewModels
     internal class MainPageViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<Pack> Packs { get; private set; }
-        private static int _packIndex = 0;
-        private static MainPageViewModel instance;
-        public MainPageViewModel(IEnumerable<Pack> packs)
+        private static int PackIndex = 0;
+        private MainPage Parent;
+        public MainPageViewModel(MainPage parent, IEnumerable<Pack> packs)
         {
-            Singleton();
             Packs = new ObservableCollection<Pack>(packs);
+            this.Parent = parent;
             OnPropertyChanged(nameof(Packs));
-        }
-
-        private void Singleton()
-        {
-            if (instance == null)
-            {
-                instance = this;
-            }
-            else
-            {
-                throw new Exception("MainPageViewModel Singleton failed...");
-            }
         }
 
         public ICommand SidebarCommand => new Command(ToggleSidebar);
@@ -42,30 +30,30 @@ namespace Sandwich.ViewModels
         async void ToggleSidebar()
         {
             SidebarActive = !SidebarActive;
-            MainPage.instance.SetSidebarButtonText(SidebarActive ? "<" : ">");
-            await MainPage.instance.MoveSidebar(SidebarActive ? 0 : -224);
+            Parent.SetSidebarButtonText(SidebarActive ? "<" : ">");
+            await Parent.MoveSidebar(SidebarActive ? 0 : -224);
         }
 
         async void OpenSettingsPage(Pack pack)
         {
-            _packIndex = Packs.IndexOf(pack);
-            await MainPage.instance.NavigateTo(new SettingsPage(pack));
+            PackIndex = Packs.IndexOf(pack);
+            await Parent.NavigateTo(new SettingsPage(pack, this));
         }
 
-        public static void UpdateCurrentPack(Pack pack)
+        public void UpdateCurrentPack(Pack pack)
         {
-            instance.Packs[_packIndex] = pack;
+            Packs[PackIndex] = pack;
         }
 
-        public static void RemoveCurrentPack()
+        public void RemoveCurrentPack()
         {
-            instance.Packs.RemoveAt(_packIndex);
+            Packs.RemoveAt(PackIndex);
         }
 
         void LaunchPack(Pack pack)
         {
             FileManager.InjectProfile(pack);
-            Process.Start($"{DataStore.store.GameDirectory}\\minecraft.exe");
+            Process.Start($"{DataStore.GameDirectory}\\minecraft.exe");
         }
 
         void AddPack()

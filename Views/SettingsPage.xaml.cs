@@ -5,10 +5,10 @@ namespace Sandwich.Views
 {
     public partial class SettingsPage : ContentPage
     {
-        internal SettingsPage(Pack pack)
+        internal SettingsPage(Pack pack, MainPageViewModel vm)
         {
             InitializeComponent();
-            BindingContext = new SettingsPageViewModel(this, pack);
+            BindingContext = new SettingsPageViewModel(this, pack, vm);
         }
 
         public async Task ShowAlert(string title, string msg, string option)

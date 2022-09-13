@@ -15,7 +15,6 @@ namespace Sandwich.Manager
     {
         public static List<Pack> GetPacks()
         {
-            Debug.WriteLine(Environment.CurrentDirectory);
             if (!Directory.Exists("./data"))
             {
                 Directory.CreateDirectory("./data");
@@ -42,6 +41,36 @@ namespace Sandwich.Manager
             return packs;
         }
 
+        public static List<string> GetPackNames()
+        {
+            if (!Directory.Exists("./data"))
+            {
+                Directory.CreateDirectory("./data");
+                return new List<string>();
+            }
+
+            List<string> names = new List<string>();
+            string[] dirs = Directory.GetDirectories($"{Environment.CurrentDirectory}\\data");
+            foreach (string dir in dirs)
+            {
+                try
+                {
+                    string data;
+                    using (TextReader tr = new StreamReader($"{dir}/manifest.json"))
+                    {
+                        data = tr.ReadToEnd();
+                    }
+                    Manifest manifest = JsonConvert.DeserializeObject<Manifest>(data);
+                    string[] split = dir.Split('\\');
+                    names.Add(split[split.Length-1].ToLower());
+                    names.Add(manifest.Title.ToLower());
+                }
+                catch { }
+            }
+
+            return names;
+        }
+
         public static void InitializeDataStore()
         {
             string docs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -65,12 +94,12 @@ namespace Sandwich.Manager
             string roaming = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             if (!Directory.Exists($"{roaming}/.minecraft"))
             {
-                MainPage.instance.ShowAlert("Error", "Could not auto detect game directory. Please manually set it in the options menu.", "OK");
-                DataStore.store.GameDirectory = "";
+                _ = MainPage.instance.ShowAlert("Error", "Could not auto detect game directory. Please manually set it in the options menu.", "OK");
+                DataStore.GameDirectory = "";
             }
             else
             {
-                DataStore.store.GameDirectory = $"{roaming}/.minecraft";
+                DataStore.GameDirectory = $"{roaming}/.minecraft";
             }
             
             SaveDataStore();
@@ -88,9 +117,9 @@ namespace Sandwich.Manager
         public static List<string> GetVersions()
         {
             List<string> versions = new List<string>();
-            if (!string.IsNullOrEmpty(DataStore.store.GameDirectory))
+            if (!string.IsNullOrEmpty(DataStore.GameDirectory))
             {
-                versions = Directory.GetDirectories($"{DataStore.store.GameDirectory}/versions").ToList();
+                versions = Directory.GetDirectories($"{DataStore.GameDirectory}/versions").ToList();
             }
             for (int i = 0; i < versions.Count; i++)
             {
@@ -129,7 +158,7 @@ namespace Sandwich.Manager
         public static void InjectProfile(Pack pack)
         {
             string data;
-            using (TextReader tr = new StreamReader($"{DataStore.store.GameDirectory}\\launcher_profiles.json"))
+            using (TextReader tr = new StreamReader($"{DataStore.GameDirectory}\\launcher_profiles.json"))
             {
                 data = tr.ReadToEnd();
             }
@@ -158,7 +187,7 @@ namespace Sandwich.Manager
                 profiles.profiles.Add("sandwich", profile);
             }
             data = JsonConvert.SerializeObject(profiles, Formatting.Indented);
-            using (TextWriter tw = new StreamWriter($"{DataStore.store.GameDirectory}\\launcher_profiles.json"))
+            using (TextWriter tw = new StreamWriter($"{DataStore.GameDirectory}\\launcher_profiles.json"))
             {
                 tw.Write(data);
             }

@@ -11,7 +11,7 @@ namespace Sandwich.Views
             Singleton();
             InitializeComponent();
             FileManager.InitializeDataStore();
-            BindingContext = new MainPageViewModel(FileManager.GetPacks());
+            BindingContext = new MainPageViewModel(this, FileManager.GetPacks());
         }
         
         private void Singleton()

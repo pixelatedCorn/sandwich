@@ -9,7 +9,8 @@ namespace Sandwich.Manager
     internal class DataStore
     {
         public static DataStore store { get; set; }
-        public string GameDirectory = "";
+        private string gameDirectory = "";
+        public static string GameDirectory { get { return store.gameDirectory; } set { store.gameDirectory = value; } }
 
         public DataStore()
         {
